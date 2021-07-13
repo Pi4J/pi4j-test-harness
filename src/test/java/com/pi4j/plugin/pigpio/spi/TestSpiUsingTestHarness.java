@@ -1,4 +1,4 @@
-package com.pi4j.plugin.pigpio.test.spi;
+package com.pi4j.plugin.pigpio.spi;
 
 /*-
  * #%L
@@ -33,7 +33,7 @@ import com.pi4j.io.spi.Spi;
 import com.pi4j.library.pigpio.PiGpio;
 import com.pi4j.plugin.pigpio.provider.spi.PiGpioSpiProvider;
 import com.pi4j.plugin.pigpio.provider.spi.PiGpioSpiProviderImpl;
-import com.pi4j.plugin.pigpio.test.TestEnv;
+import com.pi4j.plugin.pigpio.TestEnv;
 import com.pi4j.test.harness.ArduinoTestHarness;
 import com.pi4j.test.harness.TestHarnessInfo;
 import com.pi4j.test.harness.TestHarnessPins;
@@ -43,8 +43,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @DisplayName("PIGPIO Plugin :: Test SPI Communication using Test Harness")

@@ -1,4 +1,4 @@
-package com.pi4j.plugin.pigpio.test.gpio.digital;
+package com.pi4j.plugin.pigpio.gpio.digital;
 
 /*-
  * #%L
@@ -34,8 +34,8 @@ import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.digital.DigitalStateChangeListener;
 import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.library.pigpio.PiGpio;
+import com.pi4j.plugin.pigpio.TestEnv;
 import com.pi4j.plugin.pigpio.provider.gpio.digital.PiGpioDigitalInputProvider;
-import com.pi4j.plugin.pigpio.test.TestEnv;
 import com.pi4j.test.harness.ArduinoTestHarness;
 import com.pi4j.test.harness.TestHarnessInfo;
 import com.pi4j.test.harness.TestHarnessPins;

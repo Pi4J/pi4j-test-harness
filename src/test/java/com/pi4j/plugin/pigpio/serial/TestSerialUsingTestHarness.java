@@ -1,4 +1,4 @@
-package com.pi4j.plugin.pigpio.test.serial;
+package com.pi4j.plugin.pigpio.serial;
 
 /*-
  * #%L
@@ -32,9 +32,9 @@ import com.pi4j.context.Context;
 import com.pi4j.io.serial.Baud;
 import com.pi4j.io.serial.Serial;
 import com.pi4j.library.pigpio.PiGpio;
+import com.pi4j.plugin.pigpio.TestEnv;
 import com.pi4j.plugin.pigpio.provider.serial.PiGpioSerialProvider;
 import com.pi4j.plugin.pigpio.provider.serial.PiGpioSerialProviderImpl;
-import com.pi4j.plugin.pigpio.test.TestEnv;
 import com.pi4j.test.harness.ArduinoTestHarness;
 import com.pi4j.test.harness.TestHarnessInfo;
 import com.pi4j.test.harness.TestHarnessPins;

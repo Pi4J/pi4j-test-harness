@@ -22,6 +22,7 @@
         <gson.version>2.8.5</gson.version>
         <jSerialComm.version>2.5.1</jSerialComm.version>
         <json.version>20190722</json.version>
+        <pi4j.version>2.0-SNAPSHOT</pi4j.version>
         <slf4j.version>2.0.0-alpha0</slf4j.version>
         <junit.version>4.13.1</junit.version>
         <junit.jupiter.version>5.5.1</junit.jupiter.version>
@@ -35,10 +36,41 @@
         <!-- PROJECT ENCODING PROPERTIES -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- DEFAULT SETTINGS FOR REMOTELY BUILDING NATIVE LIBRARY ON A REMOTE PLATFORM -->
+        <pi4j.default.host>192.168.1.1</pi4j.default.host>
+        <pi4j.default.port>22</pi4j.default.port>
+        <pi4j.default.user>pi</pi4j.default.user>
+        <pi4j.default.password>raspberry</pi4j.default.password>
+        <pi4j.default.directory>pi4j-temp</pi4j.default.directory>
+
+        <pi4j.test.pigpio.host>${pi4j.default.host}</pi4j.test.pigpio.host>
+        <pi4j.test.pigpio.port>8888</pi4j.test.pigpio.port>
+
+        <!-- SETTING FOR ARDUINO TEST HARNESS HARDWARE TESTING -->
+        <!-- (you will need to override these in your "~/.m2/settings.xml" for your own development) -->
+        <pi4j.test.harness.enabled>false</pi4j.test.harness.enabled>
+        <pi4j.test.harness.port>tty.usbmodem142301</pi4j.test.harness.port>
     </properties>
 
     <!-- DEPENDENCIES -->
     <dependencies>
+        <dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-core</artifactId>
+            <version>${pi4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-library-pigpio</artifactId>
+            <version>${pi4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-plugin-pigpio</artifactId>
+            <version>${pi4j.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.fazecast</groupId>
             <artifactId>jSerialComm</artifactId>

@@ -1,4 +1,4 @@
-package com.pi4j.library.pigpio.test;
+package com.pi4j.library.pigpio;
 
 /*-
  * #%L
@@ -27,7 +27,6 @@ package com.pi4j.library.pigpio.test;
  * #L%
  */
 
-import com.pi4j.library.pigpio.PiGpio;
 import com.pi4j.test.harness.ArduinoTestHarness;
 
 import java.io.IOException;

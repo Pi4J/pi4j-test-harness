@@ -1,4 +1,4 @@
-package com.pi4j.plugin.pigpio.test.i2c;
+package com.pi4j.plugin.pigpio.i2c;
 
 /*-
  * #%L
@@ -30,9 +30,9 @@ package com.pi4j.plugin.pigpio.test.i2c;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CRegister;
 import com.pi4j.library.pigpio.PiGpio;
+import com.pi4j.plugin.pigpio.TestEnv;
 import com.pi4j.plugin.pigpio.provider.i2c.PiGpioI2CProvider;
 import com.pi4j.plugin.pigpio.provider.i2c.PiGpioI2CProviderImpl;
-import com.pi4j.plugin.pigpio.test.TestEnv;
 import com.pi4j.test.harness.ArduinoTestHarness;
 import com.pi4j.test.harness.TestHarnessInfo;
 import com.pi4j.test.harness.TestHarnessPins;

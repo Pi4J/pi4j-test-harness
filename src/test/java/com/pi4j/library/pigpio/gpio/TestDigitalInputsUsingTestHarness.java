@@ -1,4 +1,4 @@
-package com.pi4j.library.pigpio.test.gpio;
+package com.pi4j.library.pigpio.gpio;
 
 /*-
  * #%L
@@ -31,7 +31,7 @@ import com.pi4j.library.pigpio.PiGpio;
 import com.pi4j.library.pigpio.PiGpioMode;
 import com.pi4j.library.pigpio.PiGpioPud;
 import com.pi4j.library.pigpio.PiGpioState;
-import com.pi4j.library.pigpio.test.TestEnv;
+import com.pi4j.library.pigpio.TestEnv;
 import com.pi4j.test.harness.ArduinoTestHarness;
 import com.pi4j.test.harness.TestHarnessInfo;
 import com.pi4j.test.harness.TestHarnessPin;

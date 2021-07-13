@@ -1,10 +1,10 @@
-package com.pi4j.plugin.pigpio.test.pwm;
+package com.pi4j.library.pigpio.pwm;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: PLUGIN   :: PIGPIO I/O Providers
+ * PROJECT       :  Pi4J :: LIBRARY  :: JNI Wrapper for PIGPIO Library
  * FILENAME      :  TestSoftwarePwmUsingTestHarness.java
  *
  * This file is part of the Pi4J project. More information about
@@ -27,12 +27,10 @@ package com.pi4j.plugin.pigpio.test.pwm;
  * #L%
  */
 
-import com.pi4j.Pi4J;
-import com.pi4j.context.Context;
-import com.pi4j.io.pwm.Pwm;
 import com.pi4j.library.pigpio.PiGpio;
-import com.pi4j.plugin.pigpio.provider.pwm.PiGpioPwmProvider;
-import com.pi4j.plugin.pigpio.test.TestEnv;
+import com.pi4j.library.pigpio.PiGpioException;
+import com.pi4j.library.pigpio.PiGpioMode;
+import com.pi4j.library.pigpio.TestEnv;
 import com.pi4j.test.harness.ArduinoTestHarness;
 import com.pi4j.test.harness.TestHarnessFrequency;
 import com.pi4j.test.harness.TestHarnessInfo;
@@ -43,19 +41,17 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-@DisplayName("PIGPIO Plugin :: Test PWM (Software-Generated Signals) using Test Harness")
+@DisplayName("PIGPIO Library :: Test Software Emulated PWM Pins")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TestSoftwarePwmUsingTestHarness {
 
     private static final Logger logger = LoggerFactory.getLogger(TestSoftwarePwmUsingTestHarness.class);
 
-    public static int PIN_MIN = 2;
-    public static int PIN_MAX = 27;
-
-    private PiGpio piGpio;
-    private Context pi4j;
+    private PiGpio pigpio;
+    private int handle;
     private static ArduinoTestHarness harness;
 
     @BeforeAll
@@ -106,134 +102,130 @@ public class TestSoftwarePwmUsingTestHarness {
 
     @BeforeEach
     public void beforeEach() {
+        // create test harness and PIGPIO instances
+        pigpio = TestEnv.createPiGpio();
 
-        // TODO :: THIS WILL NEED TO CHANGE WHEN NATIVE PIGPIO SUPPORT IS ADDED
-        piGpio = TestEnv.createPiGpio();
+        // initialize test harness and PIGPIO instances
+        pigpio.initialize();
 
-        // initialize the PiGpio library
-        piGpio.initialize();
-
-        // create PWM provider instance to test with
-        var provider = PiGpioPwmProvider.newInstance(piGpio);
-
-        // initialize Pi4J instance with this single provider
-        pi4j = Pi4J.newContextBuilder().add(provider).build();
+        // reset I/O
+        //harness.reset();
     }
 
     @AfterEach
     public void afterEach() {
-        // shutdown the PiGpio library after each test
-        piGpio.shutdown();
+        // shutdown test harness and PIGPIO instances
+        pigpio.shutdown();
     }
 
     @Test
     @Order(1)
-    @DisplayName("PWM :: Test Software PWM @ 50 Hz")
+    @DisplayName("PWM :: Test PWM @ 50 Hz")
     public void testPwmAt50Hertz() {
         testPwm(50);
     }
 
     @Test
     @Order(2)
-    @DisplayName("PWM :: Test Software PWM @ 100 Hz")
+    @DisplayName("PWM :: Test PWM @ 100 Hz")
     public void testPwmAt100Hertz() {
         testPwm(100);
     }
 
     @Test
     @Order(3)
-    @DisplayName("PWM :: Test Software PWM @ 700 Hz")
+    @DisplayName("PWM :: Test PWM @ 700 Hz")
     public void testPwmAt700Hertz() {
         testPwm(700);
     }
 
     @Test
     @Order(4)
-    @DisplayName("PWM :: Test Software PWM @ 1000 Hz (1 KHz)")
+    @DisplayName("PWM :: Test PWM @ 1000 Hz (1 KHz)")
     public void testPwmAt1000Hertz() {
         testPwm(1000);
     }
 
     @Test
     @Order(5)
-    @DisplayName("PWM :: Test Software PWM @ 5000 Hz (5 KHz)")
+    @DisplayName("PWM :: Test PWM @ 5000 Hz (5 KHz)")
     public void testPwmAt5000Hertz() {
         testPwm(5000);
     }
 
     @Test
     @Order(6)
-    @DisplayName("PWM :: Test Software PWM @ 10000 Hz (10 KHz)")
+    @DisplayName("PWM :: Test PWM @ 10000 Hz (10 KHz)")
     public void testPwmAt10000Hertz() {
         testPwm(10000);
     }
 
     public void testPwm(int frequency) {
-        testPwm(frequency, 50); // 80% duty-cycle by default
+        testPwm(frequency, 128); // 50% duty-cycle by default
     }
+
     public void testPwm(int frequency, int dutyCycle) {
-        logger.info("");
-        logger.info("----------------------------------------");
-        logger.info("TEST PWM SIGNALS AT " + frequency + " HZ");
-        logger.info("----------------------------------------");
-
-        for(int p = PIN_MIN; p <= PIN_MAX; p++) {
-            // create PWM instance config
-            var config = Pwm.newConfigBuilder(pi4j)
-                    .id("my-pwm-pin-" + p)
-                    .name("My Test PWM Pin #" + p)
-                    .address(p)
-                    .build();
-
-            // create PWM I/O instance
-            Pwm pwm = pi4j.create(config);
-
+        try {
             logger.info("");
-            logger.info("[TEST SOFT PWM] :: PIN=" + p);
+            logger.info("----------------------------------------");
+            logger.info("TEST PWM SIGNALS AT " + frequency + " HZ");
+            logger.info("----------------------------------------");
 
-            // turn on PWM pulses with specified frequency and duty-cycle
-            pwm.dutyCycle(dutyCycle).frequency(frequency).on();
+            for(int p = 2; p <= 27; p++) {
+                // set pin to output pin
+                pigpio.gpioSetMode(p, PiGpioMode.OUTPUT);
 
-            logger.info(" (PWM) >> SET DESIRED FREQUENCY  = " + frequency);
-            logger.info(" (PWM) >> SET DUTY-CYCLE PERCENT = " + dutyCycle + "%");
-            logger.info(" (PWM) << GET ACTUAL FREQUENCY   = " + pwm.actualFrequency());
+                logger.info("");
+                logger.info("[TEST SOFT PWM] :: PIN=" + p);
+                int actualFrequency = pigpio.gpioSetPWMfrequency(p, frequency);
 
-            try {
-                Thread.sleep(10);
+                // write PWM frequency and duty-cycle
+                pigpio.gpioPWM(p, dutyCycle);
+                logger.info(" (WRITE) >> PWM FREQUENCY  = " + frequency  +
+                        ((actualFrequency != frequency) ? " (ACTUAL FREQ SET: " + actualFrequency + ")" : ""));
+                logger.info(" (WRITE) >> PWM DUTY-CYCLE = " + dutyCycle);
 
-                // skip measuring pin 9 frequency; something is not working here on the test harness
-                if(p != 9) {
+                // read back frequency and duty cycle
+                int readFrequency = pigpio.gpioGetPWMfrequency(p);
+                int readDutyCycle = pigpio.gpioGetPWMdutycycle(p);
 
-                    // test once ..
-                    if (measureFrequency(pwm) == false) {
-                        // test twice ..
-                        Thread.sleep(1000);
-                        if (measureFrequency(pwm) == false) {
-                            // test thrice ..
-                            Thread.sleep(2000);
-                            if (measureFrequency(pwm) == false) {
-                                // turn off PWM pin
-                                pwm.off();
+                logger.info(" (READ)  << PWM FREQUENCY  = " + readFrequency + "; (EXPECTED=" + actualFrequency + ")");
+                logger.info(" (READ)  << PWM DUTY-CYCLE = " + readDutyCycle + "; (EXPECTED=" + dutyCycle + ")");
 
-                                // give up and fail
-                                fail("PWM MEASURED FREQUENCY OUT OF ACCEPTABLE MARGIN OF ERROR");
-                            }
+                assertEquals(actualFrequency, readFrequency, "PWM FREQUENCY MISMATCH");
+                assertEquals(dutyCycle, readDutyCycle, "PWM DUTY-CYCLE MISMATCH");
+
+                Thread.sleep(100);
+
+                // test once ..
+                if(measureFrequency(p, actualFrequency) == false){
+                    // test twice ..
+                    Thread.sleep(1000);
+                    if(measureFrequency(p, actualFrequency) == false){
+                        // test thrice ..
+                        Thread.sleep(2000);
+                        if(measureFrequency(p, actualFrequency) == false){
+                            // turn off PWM pin
+                            pigpio.gpioPWM(p, 0);
+
+                            // give up and fail
+                            fail("PWM MEASURED FREQUENCY OUT OF ACCEPTABLE MARGIN OF ERROR");
                         }
                     }
                 }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
 
-            // turn off PWM pin
-            pwm.off();
+                // turn off PWM pin
+                pigpio.gpioPWM(p, 0);
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private boolean measureFrequency(Pwm pwm) {
+    private boolean measureFrequency(int pin, int frequency) {
         try {
-            int frequency = pwm.actualFrequency();
-            TestHarnessFrequency measured = harness.getFrequency(pwm.address());
+            TestHarnessFrequency measured = harness.getFrequency(pin);
+
             float deviation = (measured.frequency - frequency) * 100/(float)frequency;
             logger.info(" (TEST)  << MEASURED FREQUENCY = " + measured.frequency + "; (EXPECTED=" + frequency + "; DEVIATION: " + deviation + "%)");
 
@@ -241,7 +233,7 @@ public class TestSoftwarePwmUsingTestHarness {
             // measure the PWM signal, its not very accurate but should provide sufficient validation testing
             // just to verify the applied PWM signal is close to the expected frequency
             // calculate margin of error offset value
-            long marginOfError = Math.round(frequency * .25);
+            long marginOfError = Math.round(frequency * 25);
 
             // test measured value against HI/LOW offsets to determine acceptable range
             if(measured.frequency < frequency-marginOfError) return false;
@@ -250,7 +242,7 @@ public class TestSoftwarePwmUsingTestHarness {
             // success
             return true;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new PiGpioException(e);
         }
     }
 }
